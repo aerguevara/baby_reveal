@@ -188,7 +188,8 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
   justify-content: center;
   text-align: center;
   padding: 24px;
-  background: linear-gradient(180deg, #ffb6c1, #add8e6);
+  /* Balanced pink ↔ blue gradient */
+  background: linear-gradient(180deg, #ffd1dc 0%, #ffb6c1 24%, #cfe8ff 58%, #8cc4ff 100%);
   overflow: hidden;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
