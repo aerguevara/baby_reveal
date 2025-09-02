@@ -208,7 +208,7 @@ function RevealFestive({ text, duration = 15000 }) {
       <div className={`center-word ${revealed ? 'final' : 'rolling'}`} key={tick}>
         {display}
       </div>
-      {!revealed && <div className="muted" style={{ marginTop: 8 }}>Revelando…</div>}
+      {!revealed && <div className="reveal-hint muted">✨ Revelando…</div>}
     </div>
   )
 }
