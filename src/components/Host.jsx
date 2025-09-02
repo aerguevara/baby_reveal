@@ -87,14 +87,10 @@ export default function Host() {
             <div className="pill">Votos {game.optionsText?.[0] || 'A'}: {counts.A}</div>
             <div className="pill">Votos {game.optionsText?.[1] || 'B'}: {counts.B}</div>
           </div>
-          <div className="row">
-            <div className="chip">A = {game.optionsText?.[0]}</div>
-            <div className="chip">B = {game.optionsText?.[1]}</div>
-          </div>
           <div className="pw-row">
             <button className="pw-button" onClick={()=>nextQuestion(gameId)}>Siguiente pregunta</button>
-            <Link className="button" to={`/ranking/${gameId}`}>Ver ranking</Link>
-            <Link className="button" to={`/spectator/${gameId}`}>Abrir espectador</Link>
+            <Link className="pw-button" style={{width:'auto'}} to={`/ranking/${gameId}`}>Ver ranking</Link>
+            <Link className="pw-button" style={{width:'auto'}} to={`/spectator/${gameId}`}>Abrir espectador</Link>
           </div>
           <p className="muted">Al terminar la última pregunta, se preparará la revelación automáticamente.</p>
         </div>
@@ -106,16 +102,16 @@ export default function Host() {
               <p className="big" style={{color:'#0e1520', fontWeight:800}}>Revelamos automáticamente en {secondsLeft}s…</p>
               <p className="muted">La revelación se verá en el espectador y en dispositivos de los jugadores.</p>
               <div className="pw-row" style={{justifyContent:'center'}}>
-                <Link className="button" to={`/spectator/${gameId}`}>Ver espectador</Link>
-                <Link className="button" to={`/ranking/${gameId}`}>Ver ranking</Link>
+                <Link className="pw-button" style={{width:'auto'}} to={`/spectator/${gameId}`}>Ver espectador</Link>
+                <Link className="pw-button" style={{width:'auto'}} to={`/ranking/${gameId}`}>Ver ranking</Link>
               </div>
             </>
           ) : (
             <>
               <p className="ok">¡Revelación lanzada! 🎉</p>
               <div className="pw-row" style={{justifyContent:'center'}}>
-                <Link className="button" to={`/spectator/${gameId}`}>Ver espectador</Link>
-                <Link className="button" to={`/ranking/${gameId}`}>Ver ranking</Link>
+                <Link className="pw-button" style={{width:'auto'}} to={`/spectator/${gameId}`}>Ver espectador</Link>
+                <Link className="pw-button" style={{width:'auto'}} to={`/ranking/${gameId}`}>Ver ranking</Link>
               </div>
             </>
           )}
@@ -152,8 +148,8 @@ export default function Host() {
             </div>
           </div>
           <div className="pw-row" style={{marginTop: '8px'}}>
-            <a className="button" href={`/spectator/${gameId}`} target="_blank" rel="noopener noreferrer">Abrir espectador en nueva pestaña</a>
-            <a className="button" href={`/play/${gameId}`} target="_blank" rel="noopener noreferrer">Abrir jugador en nueva pestaña</a>
+            <a className="pw-button" style={{width:'auto'}} href={`/spectator/${gameId}`} target="_blank" rel="noopener noreferrer">Abrir espectador en nueva pestaña</a>
+            <a className="pw-button" style={{width:'auto'}} href={`/play/${gameId}`} target="_blank" rel="noopener noreferrer">Abrir jugador en nueva pestaña</a>
           </div>
           <button className="pw-button" onClick={()=>startGame(gameId)}>Iniciar juego</button>
         </div>
