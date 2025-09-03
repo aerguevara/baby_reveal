@@ -49,20 +49,10 @@ export default function Spectator() {
 
   // Old reveal animation removed; handled inside RevealFestive component
 
-  if (!game) return <div className="container spectator"><p>Cargando…</p></div>
-
-  const Aname = game.optionsText?.[0] || 'A'
-  const Bname = game.optionsText?.[1] || 'B'
   const phase = game?.phase || 'question'
 
-  const totals = votes.reduce((acc,v)=>{
-    if (v.choice === 'A') acc.A++
-    if (v.choice === 'B') acc.B++
-    return acc
-  }, {A:0,B:0})
-
-  const showReveal = game.status === 'finished' && game.revealTriggered
-  const isWaitingReveal = game.status === 'finished' && !game.revealTriggered
+  const showReveal = game?.status === 'finished' && game?.revealTriggered
+  const isWaitingReveal = game?.status === 'finished' && !game?.revealTriggered
 
   // Local countdown while waiting automatic reveal (to avoid flashing vote graph)
   const [secondsLeft, setSecondsLeft] = React.useState(3)
@@ -110,6 +100,16 @@ export default function Spectator() {
       </div>
     )
   }
+
+  if (!game) return <div className="container spectator"><p>Cargando…</p></div>
+
+  const Aname = game.optionsText?.[0] || 'A'
+  const Bname = game.optionsText?.[1] || 'B'
+  const totals = votes.reduce((acc,v)=>{
+    if (v.choice === 'A') acc.A++
+    if (v.choice === 'B') acc.B++
+    return acc
+  }, {A:0,B:0})
 
   return (
     <div className="player-welcome">
