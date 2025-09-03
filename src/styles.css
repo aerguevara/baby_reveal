@@ -349,13 +349,14 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
   border-radius: 14px;
   padding: 12px;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
-  /* Responsive square area for the QR image */
-  width: min(80vw, 60vh, 520px);
+  /* Responsive square area for the QR image (slightly smaller to avoid scroll) */
+  width: min(72vw, 50vh, 460px);
 }
 .qr-img {
   display: block;
   width: 100%;
   height: auto;
+  max-height: 50vh;
 }
 .qr-url {
   margin-top: 12px;
@@ -378,8 +379,9 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
 /* Small screens: tighten paddings/radii so it fits comfortably */
 @media (max-width: 640px) {
   .qr-frame { padding: 8px; border-radius: 16px; }
-  .qr-inner { padding: 8px; border-radius: 12px; width: min(86vw, 60vh, 420px); }
-  .qr-url { font-size: 0.95rem; padding: 8px 10px; }
+  .qr-inner { padding: 8px; border-radius: 12px; width: min(86vw, 46vh, 360px); }
+  .qr-img { max-height: 46vh; }
+  .qr-url { font-size: 0.95rem; padding: 8px 10px; margin-top: 8px; }
 }
 
 /* Decorative balloons */
@@ -436,4 +438,19 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
 @media (max-width: 640px) {
   .pw-card { width: min(92vw, 560px); padding: 18px 14px; }
   .pw-header { font-size: clamp(24px, 8vw, 44px); margin-top: 24px; }
+}
+/* Spectator lobby tweaks to avoid overflow/scroll on small screens */
+.spectator-lobby { padding-top: 16px; padding-bottom: 12px; }
+.spectator-lobby .pw-header { margin: 6px 0 12px; }
+@media (max-height: 700px) {
+  .spectator-lobby .qr-inner { width: min(82vw, 44vh, 380px); }
+  .spectator-lobby .qr-img { max-height: 44vh; }
+  .spectator-lobby .pw-header { font-size: clamp(22px, 5.5vw, 40px); }
+  .spectator-lobby .qr-url { font-size: 0.9rem; padding: 8px 10px; }
+  .spectator-lobby .pw-footer { margin-top: 10px; }
+}
+@media (max-height: 560px) {
+  .spectator-lobby .qr-inner { width: min(84vw, 38vh, 340px); }
+  .spectator-lobby .qr-img { max-height: 38vh; }
+  .spectator-lobby .qr-url { font-size: 0.85rem; }
 }

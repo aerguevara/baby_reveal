@@ -71,10 +71,10 @@ export default function Spectator() {
   if (isLobby) {
     const origin = typeof window !== 'undefined' ? window.location.origin : ''
     const playerUrl = `${origin}/play/${gameId}`
-    const size = 600
+    const size = 480
     const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(playerUrl)}&size=${size}x${size}&margin=0`
     return (
-      <div className="player-welcome">
+      <div className="player-welcome spectator-lobby">
         <div className="pw-decor pw-balloons left"><BalloonSVG color="pink" /><BalloonSVG color="blue" /><BalloonSVG color="pink" /></div>
         <div className="pw-decor pw-balloons right"><BalloonSVG color="blue" /><BalloonSVG color="pink" /><BalloonSVG color="blue" /></div>
         <div className="pw-decor pw-balloons bottom-left"><BalloonSVG color="pink" /><BalloonSVG color="blue" /></div>
