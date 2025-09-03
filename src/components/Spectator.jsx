@@ -193,15 +193,48 @@ function RevealFestive({ text, duration = 15000 }) {
   const [display, setDisplay] = React.useState('')
   const [revealed, setRevealed] = React.useState(false)
   const [tick, setTick] = React.useState(0)
+  const [showPrank, setShowPrank] = React.useState(false) // controls "Es Broma" banner
+  const [inPrank, setInPrank] = React.useState(false)     // entire prank window (2s)
+  const [prankWord, setPrankWord] = React.useState('')    // track current prank word to color
+  const prankRef = React.useRef(false)
 
   React.useEffect(() => {
     if (!text) return
     // Center word rolling
     const wordInt = setInterval(() => {
+      if (prankRef.current) return
       const next = FILLERS[(Math.random() * FILLERS.length) | 0]
       setDisplay(next)
       setTick(t => t + 1)
     }, 120)
+
+    // Alternate cycles: 5s rolling → 1s prank ("niño"/"niña") → repeat
+    let cycleTimeout = null
+    let prankHalfTimeout = null
+    let prankEndTimeout = null
+    const startCycle = () => {
+      cycleTimeout = setTimeout(() => {
+        const pWord = Math.random() < 0.5 ? 'niño' : 'niña'
+        prankRef.current = true
+        setInPrank(true)
+        setShowPrank(false)
+        setPrankWord(pWord)
+        setDisplay(pWord)
+        // After 1s, show the "Es Broma" banner
+        prankHalfTimeout = setTimeout(() => {
+          setShowPrank(true)
+        }, 1000)
+        // After 2s total, end prank and resume rolling
+        prankEndTimeout = setTimeout(() => {
+          setShowPrank(false)
+          setInPrank(false)
+          setPrankWord('')
+          prankRef.current = false
+          startCycle()
+        }, 2000)
+      }, 5000)
+    }
+    startCycle()
 
     // Corner confetti loop
     let corner = 0
@@ -230,6 +263,9 @@ function RevealFestive({ text, duration = 15000 }) {
       setRevealed(true)
       setDisplay(text)
       clearInterval(wordInt)
+      if (cycleTimeout) clearTimeout(cycleTimeout)
+      if (prankHalfTimeout) clearTimeout(prankHalfTimeout)
+      if (prankEndTimeout) clearTimeout(prankEndTimeout)
 
       // Grand finale from all corners
       const blast = (opts) => confetti({ particleCount: 180, spread: 120, scalar: 1.0, ...opts })
@@ -243,19 +279,43 @@ function RevealFestive({ text, duration = 15000 }) {
       clearInterval(wordInt)
       clearInterval(confInt)
       clearTimeout(fin)
+      prankRef.current = false
+      if (cycleTimeout) clearTimeout(cycleTimeout)
+      if (prankHalfTimeout) clearTimeout(prankHalfTimeout)
+      if (prankEndTimeout) clearTimeout(prankEndTimeout)
     }
   }, [text, duration])
 
   return (
     <div className="reveal-stage">
+      {!revealed && showPrank && (
+        <div style={{ display:'flex', flexDirection:'column', alignItems:'center', marginBottom: 12 }}>
+          <div style={{ fontSize: 120, lineHeight: 1 }}>🤣</div>
+          <div
+            className="reveal-hint"
+            style={{
+              marginTop: 8,
+              transform: 'scale(1.25)',
+              fontWeight: 900,
+              padding: '10px 16px'
+            }}
+          >Es Broma</div>
+        </div>
+      )}
       {revealed ? (
         <div className="zoom-reveal">
           <ShimmerText>{display}</ShimmerText>
         </div>
       ) : (
-        <div className={`center-word rolling`} key={tick}>{display}</div>
+        <div
+          className={`center-word rolling`}
+          key={tick}
+          style={inPrank ? { color: prankWord === 'niña' ? '#db2777' : '#2563eb', textShadow: '0 6px 22px rgba(0,0,0,0.35)' } : undefined}
+        >
+          {display}
+        </div>
       )}
-      {!revealed && <div className="reveal-hint">✨ Revelando…</div>}
+      {!revealed && !inPrank && <div className="reveal-hint">✨ Revelando…</div>}
     </div>
   )
 }
