@@ -100,7 +100,13 @@ export default function Host() {
                 await nextQuestion(gameId)
                 await setPhase(gameId, 'question')
               }
-            }}>{game.phase !== 'results' ? 'Mostrar resultados' : 'Siguiente pregunta'}</button>
+            }}>{
+              game.phase !== 'results'
+                ? 'Mostrar resultados'
+                : ((game.currentQuestionIndex || 0) >= ((game.questionsCount || 0) - 1)
+                    ? 'Finalizar juego'
+                    : 'Siguiente pregunta')
+            }</button>
             <Link className="pw-button" style={{width:'auto'}} to={`/ranking/${gameId}`}>Ver ranking</Link>
             <Link className="pw-button" style={{width:'auto'}} to={`/spectator/${gameId}`}>Abrir espectador</Link>
           </div>

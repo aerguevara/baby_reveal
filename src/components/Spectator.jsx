@@ -62,8 +62,54 @@ export default function Spectator() {
   }, {A:0,B:0})
 
   const showReveal = game.status === 'finished' && game.revealTriggered
+  const isWaitingReveal = game.status === 'finished' && !game.revealTriggered
+
+  // Local countdown while waiting automatic reveal (to avoid flashing vote graph)
+  const [secondsLeft, setSecondsLeft] = React.useState(3)
+  React.useEffect(() => {
+    if (!isWaitingReveal) return
+    setSecondsLeft(3)
+    const tick = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000)
+    return () => clearInterval(tick)
+  }, [isWaitingReveal])
 
   // Fullscreen toggle removed
+
+  if (isWaitingReveal) {
+    return (
+      <div className="player-welcome">
+        <div className="pw-decor pw-balloons left">
+          <BalloonSVG color="pink" />
+          <BalloonSVG color="blue" />
+          <BalloonSVG color="pink" />
+        </div>
+        <div className="pw-decor pw-balloons right">
+          <BalloonSVG color="blue" />
+          <BalloonSVG color="pink" />
+          <BalloonSVG color="blue" />
+        </div>
+        <div className="pw-decor pw-balloons bottom-left">
+          <BalloonSVG color="pink" />
+          <BalloonSVG color="blue" />
+        </div>
+        <div className="pw-decor pw-balloons bottom-right">
+          <BalloonSVG color="blue" />
+          <BalloonSVG color="pink" />
+        </div>
+        <ConfettiCorner pos="tl" count={50} />
+        <ConfettiCorner pos="tr" count={50} />
+        <ConfettiCorner pos="bl" count={50} />
+        <ConfettiCorner pos="br" count={50} />
+
+        <h1 className="pw-header">🎉 Baby Reveal Trivia 🎉</h1>
+        <div className="pw-card center">
+          <p className="big">¡Se acabaron las preguntas! 🎉</p>
+          <p className="muted">Vamos a la revelación en {secondsLeft}s…</p>
+        </div>
+        <p className="pw-footer">¡Prepárate para el momento final! 💙💖</p>
+      </div>
+    )
+  }
 
   return (
     <div className="player-welcome">
