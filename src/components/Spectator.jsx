@@ -336,21 +336,24 @@ function RevealFestive({ text, duration = 15000 }) {
       { x: 0.02, y: 0.98 }, // bottom-left
       { x: 0.98, y: 0.98 }, // bottom-right
     ]
+    const confColors = ['#ff7eb3','#7ebaff','#ffd36e','#7cffcb','#ffffff']
     const confInt = setInterval(() => {
       const o = corners[corner % 4]
       corner++
       confetti({
-        particleCount: 16,
-        spread: 80,
-        startVelocity: 32,
+        particleCount: 32,
+        spread: 100,
+        startVelocity: 42,
         decay: 0.92,
         gravity: 1.0,
         origin: o,
-        scalar: 0.9,
+        scalar: 1.0,
+        colors: confColors,
       })
     }, 260)
 
     // Final reveal
+    let stormInt = null
     const fin = setTimeout(() => {
       setRevealed(true)
       setDisplay(text)
@@ -360,11 +363,28 @@ function RevealFestive({ text, duration = 15000 }) {
       if (prankEndTimeout) clearTimeout(prankEndTimeout)
 
       // Grand finale from all corners
-      const blast = (opts) => confetti({ particleCount: 180, spread: 120, scalar: 1.0, ...opts })
-      setTimeout(() => blast({ origin: corners[0], startVelocity: 40 }), 0)
-      setTimeout(() => blast({ origin: corners[1], startVelocity: 42 }), 200)
-      setTimeout(() => blast({ origin: corners[2], startVelocity: 44 }), 400)
-      setTimeout(() => blast({ origin: corners[3], startVelocity: 46 }), 600)
+      const blast = (opts) => confetti({ particleCount: 520, spread: 160, scalar: 1.08, ticks: 220, colors: confColors, ...opts })
+      setTimeout(() => blast({ origin: corners[0], startVelocity: 55 }), 0)
+      setTimeout(() => blast({ origin: corners[1], startVelocity: 58 }), 150)
+      setTimeout(() => blast({ origin: corners[2], startVelocity: 60 }), 300)
+      setTimeout(() => blast({ origin: corners[3], startVelocity: 62 }), 450)
+      // Center showers
+      setTimeout(() => confetti({ particleCount: 700, spread: 200, origin: { x: 0.5, y: 0.2 }, startVelocity: 68, scalar: 1.12, colors: confColors }), 650)
+      setTimeout(() => confetti({ particleCount: 700, spread: 200, origin: { x: 0.5, y: 0.8 }, startVelocity: 68, scalar: 1.12, colors: confColors }), 820)
+
+      // Short confetti storm for extra celebration
+      stormInt = setInterval(() => {
+        confetti({
+          particleCount: 120,
+          spread: 180,
+          startVelocity: 60,
+          decay: 0.92,
+          scalar: 1.05,
+          origin: { x: Math.random()*0.9 + 0.05, y: Math.random()*0.6 },
+          colors: confColors,
+        })
+      }, 90)
+      setTimeout(() => { if (stormInt) { clearInterval(stormInt); stormInt = null } }, 4800)
     }, duration)
 
     return () => {
@@ -375,6 +395,7 @@ function RevealFestive({ text, duration = 15000 }) {
       if (cycleTimeout) clearTimeout(cycleTimeout)
       if (prankHalfTimeout) clearTimeout(prankHalfTimeout)
       if (prankEndTimeout) clearTimeout(prankEndTimeout)
+      if (stormInt) clearInterval(stormInt)
     }
   }, [text, duration])
 
