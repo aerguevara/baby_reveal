@@ -6,7 +6,13 @@ import confetti from 'canvas-confetti'
 import ShimmerText from './ShimmerText'
 import VoteBars from './VoteBars'
 
-const FILLERS = ['BABY','LOVE','FAMILY','HAPPY','WOW','SMILE','👶','🎉','✨','💖','💙','TEAM','MOM','DAD','FRIENDS','JOY']
+const FILLERS = [
+  '👶','🍼','🧸','🎉','🎊','🎈','🎀','💖','💙','✨','🎂','🥳','🎆','🎇','💝','🎁','🌟','💫',
+  '👨‍👩‍👧','👨‍👩‍👧‍👦','🧷','🧦','🪁','🪀','🪅','🍭','🍬','🍪','🍰','🍓','🧁','🫶','🤍','💗','💜','💛','💚',
+  '🩷','🩵','🪽','🌈','⭐️','🌸','🌼','🌺','🌻','🐣','🐤','🐥','🐻','🐨','🦊','🐰','🦄','👼','🪄',
+  // Textos del select de configuración (App.jsx)
+  'Hacker Etica','Ingeniero de IA'
+]
 
 export default function Spectator() {
   const { gameId } = useParams()
