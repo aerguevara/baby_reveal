@@ -20,6 +20,7 @@ export default function Spectator() {
   const [votes, setVotes] = React.useState([])
   const [players, setPlayers] = React.useState({})
   const [question, setQuestion] = React.useState(null)
+  const [copied, setCopied] = React.useState(false)
 
   // Fullscreen removed
 
@@ -53,6 +54,7 @@ export default function Spectator() {
 
   const showReveal = game?.status === 'finished' && game?.revealTriggered
   const isWaitingReveal = game?.status === 'finished' && !game?.revealTriggered
+  const isLobby = game?.status === 'lobby'
 
   // Local countdown while waiting automatic reveal (to avoid flashing vote graph)
   const [secondsLeft, setSecondsLeft] = React.useState(3)
@@ -64,6 +66,50 @@ export default function Spectator() {
   }, [isWaitingReveal])
 
   // Fullscreen toggle removed
+
+  // When game hasn't started, show a big QR to join
+  if (isLobby) {
+    const origin = typeof window !== 'undefined' ? window.location.origin : ''
+    const playerUrl = `${origin}/play/${gameId}`
+    const size = 600
+    const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(playerUrl)}&size=${size}x${size}&margin=0`
+    return (
+      <div className="player-welcome">
+        <div className="pw-decor pw-balloons left"><BalloonSVG color="pink" /><BalloonSVG color="blue" /><BalloonSVG color="pink" /></div>
+        <div className="pw-decor pw-balloons right"><BalloonSVG color="blue" /><BalloonSVG color="pink" /><BalloonSVG color="blue" /></div>
+        <div className="pw-decor pw-balloons bottom-left"><BalloonSVG color="pink" /><BalloonSVG color="blue" /></div>
+        <div className="pw-decor pw-balloons bottom-right"><BalloonSVG color="blue" /><BalloonSVG color="pink" /></div>
+        <ConfettiCorner pos="tl" count={40} />
+        <ConfettiCorner pos="tr" count={40} />
+        <ConfettiCorner pos="bl" count={40} />
+        <ConfettiCorner pos="br" count={40} />
+
+        <h1 className="pw-header">🎉 Baby Reveal Trivia 🎉</h1>
+        <div className="pw-card center" style={{ width: 'min(860px, 95vw)', margin: '0 auto' }}>
+          <p className="big" style={{ marginTop: 0, fontWeight: 900 }}>Escanea para unirte al juego</p>
+          <div className="qr-frame">
+            <div className="qr-inner">
+              <img className="qr-img" src={qrSrc} alt="QR para unirse" />
+            </div>
+          </div>
+          <div className="qr-url">
+            <span className="qr-icon">🔗</span>
+            <span className="qr-text">{playerUrl}</span>
+          </div>
+          <div className="pw-row" style={{ justifyContent: 'center', marginTop: 12 }}>
+            <button
+              className="pw-button"
+              style={{ width: 'auto' }}
+              onClick={async()=>{
+                try { await navigator.clipboard.writeText(playerUrl); setCopied(true); setTimeout(()=>setCopied(false), 1200) } catch {}
+              }}
+            >{copied ? 'Copiado' : 'Copiar URL jugadores'}</button>
+          </div>
+        </div>
+        <p className="pw-footer">Apunta tu cámara al QR y participa 💙💖</p>
+      </div>
+    )
+  }
 
   if (isWaitingReveal) {
     return (
