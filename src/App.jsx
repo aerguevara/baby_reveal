@@ -96,11 +96,7 @@ export default function App() {
         <button className="pw-button" onClick={onCreate}>Crear partida</button>
       </div>
 
-      <div className="pw-card" style={{ marginTop: 16 }}>
-        <h3 style={{ marginTop: 0 }}>Enlaces</h3>
-        <p className="muted">Host: <code>/host/&lt;gameId&gt;</code> · Jugadores: <code>/play/&lt;gameId&gt;</code> · Ranking: <code>/ranking/&lt;gameId&gt;</code> · Revelación: <code>/reveal/&lt;gameId&gt;</code> · <strong>Espectador</strong>: <code>/spectator/&lt;gameId&gt;</code></p>
-      </div>
-      <p className="pw-footer">Configura tu juego y comparte los enlaces 💙💖</p>
+      <p className="pw-footer">Configura tu juego y crea tu partida 💙💖</p>
     </div>
   )
 }

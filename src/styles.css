@@ -281,6 +281,8 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
   font-weight: 900;
   text-shadow: 0 4px 18px rgba(255,255,255,0.35), 0 2px 8px rgba(0,0,0,0.25);
   margin: 0 0 18px 0;
+  position: relative;
+  z-index: 1; /* ensure header sits above balloons */
 }
 .pw-card {
   width: min(560px, 92vw);
@@ -332,9 +334,10 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
 }
 .pw-button:hover { filter: brightness(1.05); box-shadow: 0 12px 30px rgba(255,126,179,0.5), 0 12px 30px rgba(126,186,255,0.45); }
 .pw-footer { margin-top: 14px; color: rgba(20,29,39,0.85); font-weight: 600; }
+.pw-footer { position: relative; z-index: 1; }
 
 /* Decorative balloons */
-.pw-balloons { position: absolute; top: 16px; display: flex; gap: 8px; opacity: 0.9; pointer-events: none; }
+.pw-balloons { position: absolute; top: 16px; display: flex; gap: 8px; opacity: 0.9; pointer-events: none; z-index: 0; }
 .pw-balloons.left { left: 16px; }
 .pw-balloons.right { right: 16px; }
 .pw-balloons.bottom-left { top: auto; bottom: 16px; left: 16px; }
@@ -386,5 +389,5 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
 
 @media (max-width: 640px) {
   .pw-card { width: min(92vw, 560px); padding: 18px 14px; }
-  .pw-header { font-size: clamp(24px, 8vw, 44px); }
+  .pw-header { font-size: clamp(24px, 8vw, 44px); margin-top: 24px; }
 }
