@@ -35,6 +35,17 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
 .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 .pill, .chip { padding: 8px 12px; border-radius: 99px; border: 1px solid #2a476a; }
 .chip { background: #101a29; }
+/* Ranking/Player/Host status chip on light background */
+.player-welcome .status-chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid rgba(30,42,53,0.3);
+  color: #1e2a35;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(6px);
+}
 .center { text-align: center; }
 .reveal { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; align-items: center; margin-top: 16px; }
 .reveal .result { font-size: 2.8rem; font-weight: 900; letter-spacing: 3px; }
@@ -364,6 +375,12 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
 .pw-row { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
 .pw-button.pw-optionA { background: linear-gradient(90deg, #ff9dc2, #ff6ea8); }
 .pw-button.pw-optionB { background: linear-gradient(90deg, #8cc4ff, #60a5fa); }
+/* Make Player option buttons larger so emoji + label are clear */
+.pw-button.pw-optionA, .pw-button.pw-optionB {
+  font-size: 1.25rem;
+  padding: 18px 24px;
+  line-height: 1.2;
+}
 .pw-button:disabled { opacity: 0.7; cursor: not-allowed; filter: grayscale(0.1); }
 .pw-subtle { color: rgba(20,29,39,0.75); margin-top: 8px; }
 

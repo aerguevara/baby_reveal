@@ -1,9 +1,10 @@
 
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { listenAllVotes, listenPlayers, listenGame } from '../firebase'
+import { listenAllVotes, listenPlayers, listenGame, listenQuestion } from '../firebase'
 import confetti from 'canvas-confetti'
 import ShimmerText from './ShimmerText'
+import VoteBars from './VoteBars'
 
 const FILLERS = ['BABY','LOVE','FAMILY','HAPPY','WOW','SMILE','👶','🎉','✨','💖','💙','TEAM','MOM','DAD','FRIENDS','JOY']
 
@@ -12,6 +13,7 @@ export default function Spectator() {
   const [game, setGame] = React.useState(null)
   const [votes, setVotes] = React.useState([])
   const [players, setPlayers] = React.useState({})
+  const [question, setQuestion] = React.useState(null)
 
   // Fullscreen removed
 
@@ -30,6 +32,13 @@ export default function Spectator() {
     return ()=>{ offG && offG(); offV && offV(); offP && offP() }
   },[gameId])
 
+  // Listen to current question text to display in results
+  React.useEffect(() => {
+    if (!game || typeof game.currentQuestionIndex !== 'number') return
+    const offQ = listenQuestion(gameId, game.currentQuestionIndex, setQuestion)
+    return () => offQ && offQ()
+  }, [gameId, game?.currentQuestionIndex])
+
   // Fullscreen logic removed
 
   // Old reveal animation removed; handled inside RevealFestive component
@@ -38,6 +47,7 @@ export default function Spectator() {
 
   const Aname = game.optionsText?.[0] || 'A'
   const Bname = game.optionsText?.[1] || 'B'
+  const phase = game?.phase || 'question'
 
   const totals = votes.reduce((acc,v)=>{
     if (v.choice === 'A') acc.A++
@@ -79,14 +89,26 @@ export default function Spectator() {
       )}
 
       {!showReveal ? (
-        <VoteBars
-          title={game.title}
-          subtitle="En vivo: ranking de votos"
-          Aname={Aname}
-          Bname={Bname}
-          totals={totals}
-          votes={votes}
-        />
+        phase === 'results' ? (
+          <ResultsList
+            questionText={question?.text || ''}
+            Aname={Aname}
+            Bname={Bname}
+            votes={votes.filter(v => v.questionIndex === (game.currentQuestionIndex || 0))}
+            players={players}
+          />
+        ) : (
+          <VoteBars
+            title={game.title}
+            subtitle="En vivo: ranking de votos"
+            Aname={Aname}
+            Bname={Bname}
+            totals={totals}
+            votes={votes}
+            width={1100}
+            scale={1.6}
+          />
+        )
       ) : (
         <RevealFestive text={(game.revealText || '').toUpperCase()} duration={15000} />
       )}
@@ -94,66 +116,72 @@ export default function Spectator() {
   )
 }
 
-function VoteBars({ title, subtitle, Aname, Bname, totals, votes }) {
-  const totalVotes = Math.max(0, (totals?.A || 0) + (totals?.B || 0))
-  const pct = (n) => (totalVotes ? Math.round((n / totalVotes) * 100) : 0)
-  const aPct = pct(totals.A || 0)
-  const bPct = pct(totals.B || 0)
-
-  const styles = {
-    card: { padding: 28, width: 'min(680px, 92vw)' },
-    header: { marginBottom: 12 },
-    subtitle: { margin: '4px 0 16px', color: '#6b7280' },
-    row: { display: 'flex', alignItems: 'center', gap: 12, margin: '12px 0' },
-    label: { minWidth: 120, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 },
-    barWrap: { flex: 1, background: '#eee', height: 32, borderRadius: 999, overflow: 'hidden', position: 'relative' },
-    fillA: { background: '#ff6ea8', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', color: '#fff', paddingRight: 10 },
-    fillB: { background: '#60a5fa', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', color: '#fff', paddingRight: 10 },
-    counts: { fontWeight: 700 },
-    totals: { marginTop: 10, color: '#6b7280' },
-    emojiStream: { marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 6, fontSize: 22 },
+function ResultsList({ questionText, Aname, Bname, votes, players }) {
+  const animalForId = (id='') => {
+    const animals = ['🐶','🐱','🐻','🐼','🐨','🦊','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🦄','🦉','🐙','🦕','🦒','🐢','🦁','🐰','🦜']
+    let h = 0
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0
+    return animals[h % animals.length]
   }
-
-  const choiceEmoji = (c) => (c === 'A' ? '💖' : '💙')
-  const recent = votes.slice(-40)
-
+  const votersA = votes.filter(v=>v.choice==='A').map(v=>({ id: v.playerId, name: players[v.playerId]?.name || 'Anónimo', avatar: players[v.playerId]?.avatar || animalForId(v.playerId) }))
+  const votersB = votes.filter(v=>v.choice==='B').map(v=>({ id: v.playerId, name: players[v.playerId]?.name || 'Anónimo', avatar: players[v.playerId]?.avatar || animalForId(v.playerId) }))
   return (
-    <div className="pw-card" style={styles.card}>
-      <div style={styles.header}>
-        <h1 className="xl">{title}</h1>
-        <p className="muted" style={styles.subtitle}>{subtitle}</p>
-      </div>
-
-      <div style={styles.row}>
-        <div style={styles.label}><span>💖</span> {Aname}</div>
-        <div style={styles.barWrap}>
-          <div style={{ ...styles.fillA, width: `${aPct}%` }}>
-            <span style={styles.counts}>{totals.A || 0} · {aPct}%</span>
-          </div>
-        </div>
-      </div>
-
-      <div style={styles.row}>
-        <div style={styles.label}><span>💙</span> {Bname}</div>
-        <div style={styles.barWrap}>
-          <div style={{ ...styles.fillB, width: `${bPct}%` }}>
-            <span style={styles.counts}>{totals.B || 0} · {bPct}%</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="muted" style={styles.totals}>{totalVotes} votos totales</div>
-
-      {!!recent.length && (
-        <div style={styles.emojiStream} aria-label="Actividad reciente">
-          {recent.map((v, i) => (
-            <span key={i}>{choiceEmoji(v.choice)}</span>
-          ))}
-        </div>
+    <div className="pw-card" style={{ width: 'min(1100px, 95vw)', margin: '0 auto' }}>
+      {!!questionText && (
+        <>
+          <p className="muted" style={{ marginTop: 0 }}>Pregunta:</p>
+          <p className="big" style={{ color:'#0e1520', fontWeight:800, marginTop: 0, fontSize: '1.6rem' }}>{questionText}</p>
+        </>
       )}
+      <div className="row" style={{alignItems:'flex-start'}}>
+        <div style={{flex:1, display:'flex', flexDirection:'column', alignItems:'center'}}>
+          <h4 style={{margin:'8px 0', textAlign:'center', fontSize: '1.6rem'}}>💖 {Aname}</h4>
+          <ul style={{ listStyle: 'none', paddingLeft: 0, margin: '6px 0', display:'flex', flexDirection:'column', alignItems:'center' }}>
+            {votersA.length ? votersA.map((p,i)=>(
+              <li
+                key={p.id || i}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  minHeight: 52,
+                  padding: '2px 0',
+                  justifyContent: 'center'
+                }}
+              >
+                <span style={{ fontSize: 60, width: 68, textAlign: 'center' }}>{p.avatar}</span>
+                <span style={{ lineHeight: 1.2, fontSize: '1.3rem', fontWeight: 800 }}>{p.name}</span>
+              </li>
+            )) : <li className="muted">Sin votos</li>}
+          </ul>
+        </div>
+        <div style={{flex:1, display:'flex', flexDirection:'column', alignItems:'center'}}>
+          <h4 style={{margin:'8px 0', textAlign:'center', fontSize: '1.6rem'}}>💙 {Bname}</h4>
+          <ul style={{ listStyle: 'none', paddingLeft: 0, margin: '6px 0', display:'flex', flexDirection:'column', alignItems:'center' }}>
+            {votersB.length ? votersB.map((p,i)=>(
+              <li
+                key={p.id || i}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  minHeight: 52,
+                  padding: '2px 0',
+                  justifyContent: 'center'
+                }}
+              >
+                <span style={{ fontSize: 60, width: 68, textAlign: 'center' }}>{p.avatar}</span>
+                <span style={{ lineHeight: 1.2, fontSize: '1.3rem', fontWeight: 800 }}>{p.name}</span>
+              </li>
+            )) : <li className="muted">Sin votos</li>}
+          </ul>
+        </div>
+      </div>
     </div>
   )
 }
+
+// VoteBars moved to shared component
 
 function RevealFestive({ text, duration = 15000 }) {
   const [display, setDisplay] = React.useState('')

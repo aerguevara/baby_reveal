@@ -29,6 +29,7 @@ export async function createGame(meta, questions) {
   await setDoc(gameRef, {
     ...meta,
     playersCount: 0,
+    phase: 'question',
     createdAt: serverTimestamp()
   })
   const ops = questions.map((q, idx) =>
@@ -65,7 +66,15 @@ export function listenAllVotes(gameId, cb) {
 export async function joinGame(gameId, name) {
   await ensureAnonAuth()
   const pRef = doc(collection(db,'games',gameId,'players'))
-  await setDoc(pRef, { name, joinedAt: serverTimestamp() })
+  // Assign a persistent animal emoji avatar based on the generated player id
+  const animals = ['🐶','🐱','🐻','🐼','🐨','🦊','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🦄','🦉','🐙','🦕','🦒','🐢','🦁','🐰','🦜']
+  const pickAnimal = (id) => {
+    let h = 0
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0
+    return animals[h % animals.length]
+  }
+  const avatar = pickAnimal(pRef.id)
+  await setDoc(pRef, { name, avatar, joinedAt: serverTimestamp() })
   await updateDoc(doc(db,'games',gameId), { playersCount: increment(1) })
   return pRef.id
 }
@@ -100,9 +109,13 @@ export async function nextQuestion(gameId) {
 }
 
 export async function startGame(gameId) {
-  await updateDoc(doc(db,'games',gameId), { status: 'running' })
+  await updateDoc(doc(db,'games',gameId), { status: 'running', phase: 'question' })
 }
 
 export async function setRevealTriggered(gameId, value=true) {
   await updateDoc(doc(db,'games',gameId), { revealTriggered: value })
+}
+
+export async function setPhase(gameId, phase) {
+  await updateDoc(doc(db,'games',gameId), { phase })
 }

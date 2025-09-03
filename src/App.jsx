@@ -69,13 +69,13 @@ export default function App() {
         <label>Nombre 1 (opción A)</label>
         <div className="pw-input-wrap">
           <span className="pw-icon">💖</span>
-          <input value={optionA} onChange={e=>setOptionA(e.target.value)} />
+          <input value={optionA} onChange={e=>setOptionA(e.target.value)} disabled />
         </div>
 
         <label>Nombre 2 (opción B)</label>
         <div className="pw-input-wrap">
           <span className="pw-icon">💙</span>
-          <input value={optionB} onChange={e=>setOptionB(e.target.value)} />
+          <input value={optionB} onChange={e=>setOptionB(e.target.value)} disabled />
         </div>
 
         <label>Texto de revelación</label>

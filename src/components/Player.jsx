@@ -7,7 +7,7 @@ import { joinGame, submitVote } from '../firebase'
 export default function Player() {
   const { gameId } = useParams()
   const navigate = useNavigate()
-  const { game, question } = useGame(gameId)
+  const { game, question, votes } = useGame(gameId)
   const [name, setName] = useState('')
   const [playerId, setPlayerId] = useState(null)
   const [voted, setVoted] = useState(false)
@@ -16,6 +16,7 @@ export default function Player() {
   const [nameError, setNameError] = useState(false)
 
   useEffect(()=>{ setVoted(false) },[question?.index])
+
 
   // Detect end of questions and start redirect flow once
   useEffect(() => {
@@ -54,6 +55,8 @@ export default function Player() {
 
   const A = game?.optionsText?.[0] || 'Albanys'
   const B = game?.optionsText?.[1] || 'Anyelo'
+  const phase = game?.phase || 'question'
+  const isRunning = game?.status === 'running'
 
   if (!playerId) return (
     <div className="player-welcome">
@@ -121,6 +124,50 @@ export default function Player() {
     </div>
   )
 
+  // Esperar a que el Host inicie la partida (no mostrar preguntas todavía)
+  if (!isRunning) return (
+    <div className="player-welcome">
+      <div className="pw-decor pw-balloons left"><BalloonSVG color="pink" /><BalloonSVG color="blue" /><BalloonSVG color="pink" /></div>
+      <div className="pw-decor pw-balloons right"><BalloonSVG color="blue" /><BalloonSVG color="pink" /><BalloonSVG color="blue" /></div>
+      <div className="pw-decor pw-balloons bottom-left"><BalloonSVG color="pink" /><BalloonSVG color="blue" /></div>
+      <div className="pw-decor pw-balloons bottom-right"><BalloonSVG color="blue" /><BalloonSVG color="pink" /></div>
+      <ConfettiCorner pos="tl" count={40} />
+      <ConfettiCorner pos="tr" count={40} />
+      <ConfettiCorner pos="bl" count={40} />
+      <ConfettiCorner pos="br" count={40} />
+
+      <h1 className="pw-header">🎉 Baby Reveal Trivia 🎉</h1>
+      <div className="pw-card center">
+        <p className="big">Esperando que empiece la partida…</p>
+        <p className="muted">El presentador iniciará el juego en breve.</p>
+      </div>
+      <p className="pw-footer">¡Prepárate para divertirte! 💙💖</p>
+    </div>
+  )
+
+  // Mostrar resultados entre preguntas: en Player solo se indica que están en resultados en la pantalla
+  if (isRunning && phase === 'results') {
+    return (
+      <div className="player-welcome">
+        <div className="pw-decor pw-balloons left"><BalloonSVG color="pink" /><BalloonSVG color="blue" /><BalloonSVG color="pink" /></div>
+        <div className="pw-decor pw-balloons right"><BalloonSVG color="blue" /><BalloonSVG color="pink" /><BalloonSVG color="blue" /></div>
+        <div className="pw-decor pw-balloons bottom-left"><BalloonSVG color="pink" /><BalloonSVG color="blue" /></div>
+        <div className="pw-decor pw-balloons bottom-right"><BalloonSVG color="blue" /><BalloonSVG color="pink" /></div>
+        <ConfettiCorner pos="tl" count={40} />
+        <ConfettiCorner pos="tr" count={40} />
+        <ConfettiCorner pos="bl" count={40} />
+        <ConfettiCorner pos="br" count={40} />
+
+        <h1 className="pw-header">🎉 Resultados</h1>
+        <div className="pw-card center" style={{ width: 'min(560px, 92vw)', margin: '0 auto' }}>
+          <p className="big">Mostrando resultados en la pantalla del espectador…</p>
+          <p className="muted">Espera a la siguiente pregunta</p>
+        </div>
+        <p className="pw-footer">Gracias por jugar 💙💖</p>
+      </div>
+    )
+  }
+
   return (
     <div className="player-welcome">
       <div className="pw-decor pw-balloons left"><BalloonSVG color="pink" /><BalloonSVG color="blue" /><BalloonSVG color="pink" /></div>
@@ -137,8 +184,8 @@ export default function Player() {
         <p className="muted">Pregunta #{(game.currentQuestionIndex||0)+1} de {game.questionsCount || '-'}</p>
         <p className="big" style={{color:'#0e1520', fontWeight:800}}>{question?.text || 'Esperando…'}</p>
         <div className="pw-row">
-          <button className="pw-button pw-optionA" disabled={voted} onClick={()=>vote('A')}>💖 {A}</button>
-          <button className="pw-button pw-optionB" disabled={voted} onClick={()=>vote('B')}>💙 {B}</button>
+          <button className="pw-button pw-optionA" disabled={voted || phase !== 'question'} onClick={()=>vote('A')}>💖 {A}</button>
+          <button className="pw-button pw-optionB" disabled={voted || phase !== 'question'} onClick={()=>vote('B')}>💙 {B}</button>
         </div>
         {voted && <p className="ok">¡Voto enviado! Espera la siguiente pregunta.</p>}
         {game?.status === 'finished' && <p className="ok">¡Se acabaron las preguntas! 🎉</p>}

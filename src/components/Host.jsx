@@ -2,7 +2,7 @@
 import React, { useMemo, useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import useGame from '../hooks/useGame'
-import { startGame, nextQuestion, setRevealTriggered } from '../firebase'
+import { startGame, nextQuestion, setRevealTriggered, setPhase } from '../firebase'
 
 export default function Host() {
   const { gameId } = useParams()
@@ -87,8 +87,20 @@ export default function Host() {
             <div className="pill">Votos {game.optionsText?.[0] || 'A'}: {counts.A}</div>
             <div className="pill">Votos {game.optionsText?.[1] || 'B'}: {counts.B}</div>
           </div>
+          {game.phase === 'results' && (
+            <div className="row" style={{ marginTop: 8 }}>
+              <div className="status-chip">Mostrando resultados de la pregunta actual</div>
+            </div>
+          )}
           <div className="pw-row">
-            <button className="pw-button" onClick={()=>nextQuestion(gameId)}>Siguiente pregunta</button>
+            <button className="pw-button" onClick={async()=>{
+              if (game.phase !== 'results') {
+                await setPhase(gameId, 'results')
+              } else {
+                await nextQuestion(gameId)
+                await setPhase(gameId, 'question')
+              }
+            }}>{game.phase !== 'results' ? 'Mostrar resultados' : 'Siguiente pregunta'}</button>
             <Link className="pw-button" style={{width:'auto'}} to={`/ranking/${gameId}`}>Ver ranking</Link>
             <Link className="pw-button" style={{width:'auto'}} to={`/spectator/${gameId}`}>Abrir espectador</Link>
           </div>
