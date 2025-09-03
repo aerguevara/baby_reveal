@@ -140,7 +140,6 @@ export default function Player() {
           <button className="pw-button pw-optionA" disabled={voted} onClick={()=>vote('A')}>💖 {A}</button>
           <button className="pw-button pw-optionB" disabled={voted} onClick={()=>vote('B')}>💙 {B}</button>
         </div>
-        <p className="pw-subtle">{A} · {B}</p>
         {voted && <p className="ok">¡Voto enviado! Espera la siguiente pregunta.</p>}
         {game?.status === 'finished' && <p className="ok">¡Se acabaron las preguntas! 🎉</p>}
       </div>

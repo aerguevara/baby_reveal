@@ -7,6 +7,12 @@
     <title>Baby Reveal Trivia</title>
   </head>
   <body>
+    <script>
+      // Set spectator background class ASAP to avoid dark flash on reload
+      if (location.pathname.startsWith('/spectator/')) {
+        document.body.classList.add('spectator');
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

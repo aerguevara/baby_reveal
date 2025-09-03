@@ -3,6 +3,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import { listenAllVotes, listenPlayers, listenGame } from '../firebase'
 import confetti from 'canvas-confetti'
+import ShimmerText from './ShimmerText'
 
 const FILLERS = ['BABY','LOVE','FAMILY','HAPPY','WOW','SMILE','👶','🎉','✨','💖','💙','TEAM','MOM','DAD','FRIENDS','JOY']
 
@@ -13,6 +14,14 @@ export default function Spectator() {
   const [players, setPlayers] = React.useState({})
 
   // Fullscreen removed
+
+  // Ensure body uses spectator background (prevents dark flash on reload)
+  React.useEffect(() => {
+    document.body.classList.add('spectator')
+    return () => {
+      document.body.classList.remove('spectator')
+    }
+  }, [])
 
   React.useEffect(()=>{
     const offG = listenGame(gameId, setGame)
@@ -206,11 +215,13 @@ function RevealFestive({ text, duration = 15000 }) {
   return (
     <div className="reveal-stage">
       {revealed ? (
-        <FinalWordSVG text={display} />
+        <div className="zoom-reveal">
+          <ShimmerText>{display}</ShimmerText>
+        </div>
       ) : (
         <div className={`center-word rolling`} key={tick}>{display}</div>
       )}
-      {!revealed && <div className="reveal-hint muted">✨ Revelando…</div>}
+      {!revealed && <div className="reveal-hint">✨ Revelando…</div>}
     </div>
   )
 }

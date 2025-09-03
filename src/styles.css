@@ -3,6 +3,15 @@
 * { box-sizing: border-box; }
 html, body { min-height: 100%; }
 body { margin: 0; background: radial-gradient(1400px 1100px at 20% 10%, #0f1a2b, #0b0f14 60%); color: #e6f0ff; }
+/* Avoid dark flash on Spectator by overriding body bg when on that route */
+body.spectator {
+  background: linear-gradient(180deg, #ffd1dc 0%, #ffb6c1 24%, #cfe8ff 58%, #8cc4ff 100%);
+  color: #1e2a35; /* default text darker for contrast */
+}
+/* Adjust semantic text colors on light spectator theme */
+body.spectator .muted { color: #475569; }
+body.spectator .ok { color: #0f6c3d; font-weight: 700; }
+body.spectator a { color: #1d4ed8; }
 .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
 h1,h2,h3 { margin: 8px 0 12px; }
 p { line-height: 1.5; }
@@ -106,15 +115,30 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
   text-align: center;
   padding: 20px;
 }
+.zoom-reveal { display: inline-block; transform-origin: center; animation: revealZoomIn 700ms cubic-bezier(0.22, 1, 0.36, 1) both, softBreath 2.8s ease-in-out infinite 800ms; }
+@keyframes revealZoomIn { 0% { transform: scale(0.85); opacity: 0; } 60% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes softBreath {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.07); }
+  /* pequeño pop intermedio */
+  45%  { transform: scale(1.02); }
+  60%  { transform: scale(1.09); }
+  75%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
 .reveal-hint {
   margin-top: 16px;
   padding: 8px 12px;
   display: inline-block;
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(8,18,36,0.6);
+  border: 1px solid rgba(8,18,36,0.75);
   border-radius: 999px;
-  color: #e6f0ff;
+  color: #ffffff;
   box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+  backdrop-filter: blur(4px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.45);
 }
 .center-word {
   font-size: clamp(36px, 12vw, 160px);
@@ -154,6 +178,41 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
 /* Pulse animation for letters */
 .pulse { animation: pulse 1s ease-in-out infinite; }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
+
+/* ShimmerText component styles */
+.shimmer-text {
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  font-size: clamp(36px, 10vw, 88px);
+  margin: 0.2em 0;
+  /* Base gradient driven by theme vars (fallback to previous vars) */
+  --from: var(--shimmer-from, var(--neon-from, #60a5fa));
+  --to:   var(--shimmer-to,   var(--neon-to,   #ff7eb3));
+  background-image: linear-gradient(90deg, var(--from), var(--to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.animate-shimmer {
+  /* Moving highlight band across the text */
+  background-image:
+    linear-gradient(90deg, var(--from), var(--to)),
+    linear-gradient(120deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.9) 45%, rgba(255,255,255,0) 70%);
+  background-size: 100% 100%, 35% 100%;
+  background-position: 0 0, -40% 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text, text;
+  background-clip: text, text;
+  animation: shimmerSlide 2.2s ease-in-out infinite;
+}
+
+@keyframes shimmerSlide {
+  0%   { background-position: 0 0, -40% 0; }
+  50%  { background-position: 0 0, 60% 0; }
+  100% { background-position: 0 0, 140% 0; }
+}
 
 /* Mosaic */
 .mosaic {
@@ -203,6 +262,7 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
   background: linear-gradient(180deg, #ffd1dc 0%, #ffb6c1 24%, #cfe8ff 58%, #8cc4ff 100%);
   overflow: hidden;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: #1e2a35; /* ensure readable text on light gradient */
 }
 .pw-header {
   color: #fff;
@@ -220,6 +280,10 @@ button.ghost, .ghost { background: rgba(14,21,32,0.6); border: 1px solid #325a86
   padding: 22px 18px;
   backdrop-filter: blur(8px);
 }
+.player-welcome .muted { color: #475569; }
+.player-welcome .pill { color: #1e2a35; background: rgba(255,255,255,0.5); border-color: rgba(30,42,53,0.28); }
+/* Success messages readable on light background */
+.player-welcome .ok { color: #0f6c3d; font-weight: 700; }
 .pw-card label { display: block; text-align: left; color: #1e2a35; font-weight: 700; margin-bottom: 8px; }
 .pw-input-wrap { position: relative; }
 .pw-input-wrap input {
