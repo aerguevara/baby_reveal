@@ -205,9 +205,11 @@ function RevealFestive({ text, duration = 15000 }) {
 
   return (
     <div className="reveal-stage">
-      <div className={`center-word ${revealed ? 'final' : 'rolling'}`} key={tick}>
-        {display}
-      </div>
+      {revealed ? (
+        <FinalWordSVG text={display} />
+      ) : (
+        <div className={`center-word rolling`} key={tick}>{display}</div>
+      )}
       {!revealed && <div className="reveal-hint muted">✨ Revelando…</div>}
     </div>
   )
@@ -245,6 +247,33 @@ function ConfettiCorner({ pos, count = 40 }) {
         )
       })}
     </div>
+  )
+}
+
+function FinalWordSVG({ text }) {
+  // Render gradient-filled text with SVG to control fill separately from CSS
+  // Responsive sizing via viewBox and CSS width
+  const gradId = 'reveal_grad'
+  const filterId = 'reveal_shadow'
+  return (
+    <svg className="reveal-svg" viewBox="0 0 1000 240" role="img" aria-label={text} preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#ff7eb3" />
+          <stop offset="100%" stopColor="#7ebaff" />
+        </linearGradient>
+        <filter id={filterId} x="-20%" y="-40%" width="140%" height="180%" colorInterpolationFilters="sRGB">
+          <feDropShadow dx="0" dy="0" stdDeviation="1.2" floodColor="#081224" floodOpacity="0.9" />
+          <feDropShadow dx="0" dy="3" stdDeviation="3.2" floodColor="#0a1420" floodOpacity="0.45" />
+        </filter>
+      </defs>
+      <text className="pulse" x="50%" y="50%" textAnchor="middle" dominantBaseline="middle"
+        fontFamily="Inter, system-ui, Avenir, Helvetica, Arial, sans-serif"
+        fontWeight="900" fontSize="150" fill={`url(#${gradId})`} filter={`url(#${filterId})`}
+        lengthAdjust="spacingAndGlyphs" textLength="900">
+        {text}
+      </text>
+    </svg>
   )
 }
 
